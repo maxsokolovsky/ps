@@ -1,4 +1,4 @@
-module task-manager
+module ps
 
 go 1.15
 

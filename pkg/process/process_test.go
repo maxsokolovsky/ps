@@ -1,8 +1,9 @@
 package process_test
 
 import (
-	"task-manager/pkg/process"
 	"testing"
+
+	"ps/pkg/process"
 )
 
 func TestMockProcess(t *testing.T) {

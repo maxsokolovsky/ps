@@ -8,8 +8,9 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"task-manager/pkg/process"
 	"time"
+
+	"ps/pkg/process"
 )
 
 type Scheduler interface {
@@ -79,7 +80,6 @@ func (s *scheduler) SubmitProcess(cmd string, args ...string) string {
 }
 
 func (s *scheduler) CancelProcess(pid string) error {
-	fmt.Println("XXXXXXXX", pid)
 	if v, ok := s.m.Load(pid); ok {
 		defer s.m.Delete(pid)
 		p := v.(process.Process)

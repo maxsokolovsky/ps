@@ -1,13 +1,14 @@
 package process_test
 
 import (
-	"task-manager/pkg/process"
 	"testing"
 	"time"
+
+	"ps/pkg/process"
 )
 
 func TestUnixProcess(t *testing.T) {
-	p := process.NewProcess("sleep", "3s")
+	p := process.NewProcess("sleep", "2s")
 
 	p.Start()
 

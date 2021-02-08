@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"task-manager/pkg/scheduler"
+
+	"ps/pkg/scheduler"
 )
 
 type Handler struct {

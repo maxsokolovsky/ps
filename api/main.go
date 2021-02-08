@@ -5,8 +5,9 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"task-manager/pkg/scheduler"
 	"time"
+
+	"ps/pkg/scheduler"
 
 	"github.com/bmizerany/pat"
 )
