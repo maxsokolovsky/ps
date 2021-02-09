@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"ps/pkg/scheduler"
@@ -41,11 +40,18 @@ func (handler *Handler) CancelProcess(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (handler *Handler) IsProcessRunning(w http.ResponseWriter, r *http.Request) {
+func (handler *Handler) GetProcessStatus(w http.ResponseWriter, r *http.Request) {
 	pid := r.URL.Query().Get(":pid")
 	if pid == "" {
 		http.Error(w, "pid is required", http.StatusBadRequest)
 		return
 	}
-	fmt.Fprint(w, handler.s.IsProcessRunning(pid))
+
+	status, err := handler.s.ProcessStatus(pid)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	resp := GetProcessStatusResponse{*status}
+	json.NewEncoder(w).Encode(resp)
 }

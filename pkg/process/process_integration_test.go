@@ -10,7 +10,8 @@ import (
 func TestUnixProcess(t *testing.T) {
 	p := process.NewProcess("sleep", "2s")
 
-	p.Start()
+	go p.Start()
+	time.Sleep(100 * time.Millisecond)
 
 	if !p.IsRunning() {
 		t.Errorf("process is supposed to be running")

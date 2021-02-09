@@ -17,7 +17,7 @@ func Handlers() http.Handler {
 
 	mux.Post("/process/create", http.HandlerFunc(handler.SubmitProcess))
 	mux.Post("/process/cancel/:pid", http.HandlerFunc(handler.CancelProcess))
-	mux.Get("/process/:pid", http.HandlerFunc(handler.IsProcessRunning))
+	mux.Get("/process/:pid", http.HandlerFunc(handler.GetProcessStatus))
 
 	return mux
 }

@@ -70,7 +70,7 @@ func HandleCancelCmd(args []string) error {
 	return nil
 }
 
-func HandleIsRunningCmd(args []string) error {
+func HandleGetStatusCmd(args []string) error {
 	if args[0] == "" {
 		return errors.New("pid is required")
 	}

@@ -7,12 +7,13 @@ import (
 )
 
 const (
-	CreateCmd = "create"
-	CancelCmd = "cancel"
-	IsRunning = "isrunning"
+	CreateCmd    = "create"
+	CancelCmd    = "cancel"
+	GetStatusCmd = "status"
 )
 
 var addr = flag.String("addr", ":4000", "HTTP network address")
+var host = flag.String("host", "localhost", "HTTP network host")
 
 func main() {
 	flag.Parse()
@@ -29,8 +30,8 @@ func main() {
 		err = HandleCreateCmd(args)
 	case CancelCmd:
 		err = HandleCancelCmd(args)
-	case IsRunning:
-		err = HandleIsRunningCmd(args)
+	case GetStatusCmd:
+		err = HandleGetStatusCmd(args)
 	default:
 		fmt.Println("unknown command")
 		os.Exit(1)

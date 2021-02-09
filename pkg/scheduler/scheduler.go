@@ -16,14 +16,12 @@ import (
 type Scheduler interface {
 	SubmitProcess(string, ...string) string
 	CancelProcess(string) error
-	IsProcessRunning(string) bool
+	ProcessStatus(string) (*process.ProcessInfo, error)
 }
 
 type result struct {
-	id     string
-	output []byte
-	err    error
-	info   process.ProcessInfo
+	pid  string
+	info *process.ProcessInfo
 }
 
 type scheduler struct {
@@ -54,14 +52,21 @@ func (s *scheduler) Listen() {
 	for {
 		r := <-s.ch
 		s.printResult(os.Stdout, r)
-		s.m.Delete(r.id)
+
+		// Give clients a minute to read the status before deleting.
+		go func() {
+			select {
+			case <-time.After(time.Minute):
+				s.m.Delete(r.pid)
+			}
+		}()
 	}
 }
 
 func (s *scheduler) printResult(w io.Writer, r result) {
-	fmt.Fprintf(w, "ID: %q; task: %s %s; err: %v.\n", r.id, r.info.Path, strings.Join(r.info.Args, " "), r.err)
-	if len(r.output) > 0 {
-		fmt.Fprintf(w, string(r.output))
+	fmt.Fprintf(w, "ID: %q; task: %s %s; err: %v.\n", r.pid, r.info.Path, strings.Join(r.info.Args, " "), r.info.Error)
+	if len(r.info.Output) > 0 {
+		fmt.Fprintf(w, string(r.info.Output))
 	}
 }
 
@@ -71,8 +76,13 @@ func (s *scheduler) SubmitProcess(cmd string, args ...string) string {
 	s.m.Store(pid, p)
 
 	go func() {
-		output, err := p.Start()
-		r := result{pid, output, err, process.ProcessInfo{Path: cmd, Args: args}}
+		p.Start()
+		info := p.GetInfo()
+
+		r := result{
+			pid:  pid,
+			info: info,
+		}
 		s.ch <- r
 	}()
 
@@ -89,12 +99,12 @@ func (s *scheduler) CancelProcess(pid string) error {
 	}
 }
 
-func (s *scheduler) IsProcessRunning(pid string) bool {
+func (s *scheduler) ProcessStatus(pid string) (*process.ProcessInfo, error) {
 	if v, ok := s.m.Load(pid); ok {
 		p := v.(process.Process)
-		return p.IsRunning()
+		return p.GetInfo(), nil
 	} else {
-		return false
+		return nil, errors.New("process ID not found")
 	}
 }
 

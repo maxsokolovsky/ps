@@ -22,9 +22,9 @@ func (p *mockProcess) IsRunning() bool {
 	return p.running
 }
 
-func (p *mockProcess) Start() ([]byte, error) {
+func (p *mockProcess) Start() error {
 	if !p.IsRunning() {
-		return nil, errors.New("process already stopped")
+		return errors.New("process already stopped")
 	}
 	go func() {
 		for {
@@ -37,7 +37,7 @@ func (p *mockProcess) Start() ([]byte, error) {
 			}
 		}
 	}()
-	return nil, nil
+	return nil
 }
 
 func (p *mockProcess) Stop() error {
@@ -49,6 +49,6 @@ func (p *mockProcess) Stop() error {
 	return nil
 }
 
-func (p *mockProcess) GetInfo() ProcessInfo {
-	return ProcessInfo{}
+func (p *mockProcess) GetInfo() *ProcessInfo {
+	return &ProcessInfo{}
 }

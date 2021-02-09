@@ -7,23 +7,23 @@ import (
 )
 
 type Process interface {
-	Start() ([]byte, error)
+	Start() error
 	Stop() error
 	IsRunning() bool
-	GetInfo() ProcessInfo
+	GetInfo() *ProcessInfo
 }
 
 const ProcessTimeoutSeconds = 10
-
-type ProcessInfo struct {
-	Path string
-	Args []string
-}
 
 type process struct {
 	*exec.Cmd
 	cancelFunc context.CancelFunc
 	running    bool
+
+	path   string
+	args   []string
+	output []byte
+	error  error
 }
 
 func NewProcess(name string, args ...string) Process {
@@ -33,6 +33,8 @@ func NewProcess(name string, args ...string) Process {
 		Cmd:        exec.CommandContext(ctx, name, args...),
 		cancelFunc: cancelFunc,
 		running:    true,
+		path:       name,
+		args:       args,
 	}
 }
 
@@ -40,12 +42,18 @@ func (p *process) IsRunning() bool {
 	return p.running
 }
 
-func (p *process) Start() ([]byte, error) {
+func (p *process) Start() error {
 	if !p.IsRunning() {
-		return nil, errors.New("process already stopped")
+		return errors.New("process already stopped")
 	}
 
-	return p.Cmd.CombinedOutput()
+	output, err := p.Cmd.CombinedOutput()
+
+	p.running = false
+	p.output = output
+	p.error = err
+
+	return err
 }
 
 func (p *process) Stop() error {
@@ -57,9 +65,12 @@ func (p *process) Stop() error {
 	return nil
 }
 
-func (p *process) GetInfo() ProcessInfo {
-	return ProcessInfo{
-		Path: p.Cmd.Path,
-		Args: p.Cmd.Args[1:],
+func (p *process) GetInfo() *ProcessInfo {
+	return &ProcessInfo{
+		Path:      p.Cmd.Path,
+		Args:      p.Cmd.Args[1:],
+		IsRunning: p.running,
+		Output:    p.output,
+		Error:     p.error,
 	}
 }
