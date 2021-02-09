@@ -12,7 +12,7 @@ import (
 	"github.com/bmizerany/pat"
 )
 
-func Handlers() http.Handler {
+func makeHandler() http.Handler {
 	mux := pat.New()
 
 	mux.Post("/process/create", http.HandlerFunc(handler.SubmitProcess))
@@ -27,7 +27,7 @@ var handler = Handler{
 }
 
 func main() {
-	addr := flag.String("addr", ":4000", "HTTP network address")
+	port := flag.String("port", ":4000", "HTTP network port")
 	flag.Parse()
 
 	tlsConfig := &tls.Config{
@@ -36,14 +36,14 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:         *addr,
-		Handler:      Handlers(),
+		Addr:         *port,
+		Handler:      makeHandler(),
 		TLSConfig:    tlsConfig,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
 
-	log.Println("Starting server on", *addr)
+	log.Println("Starting server on", *port)
 	log.Fatal(srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem"))
 }

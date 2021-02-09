@@ -19,7 +19,7 @@ func (handler *Handler) SubmitProcess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if spr.Path == "" {
-		http.Error(w, "path is required", http.StatusBadRequest)
+		http.Error(w, ErrPathIsRequired.Error(), http.StatusBadRequest)
 		return
 	}
 	pid := handler.s.SubmitProcess(spr.Path, spr.Args...)
@@ -30,7 +30,7 @@ func (handler *Handler) SubmitProcess(w http.ResponseWriter, r *http.Request) {
 func (handler *Handler) CancelProcess(w http.ResponseWriter, r *http.Request) {
 	pid := r.URL.Query().Get(":pid")
 	if pid == "" {
-		http.Error(w, "pid is required", http.StatusBadRequest)
+		http.Error(w, ErrPidIsRequired.Error(), http.StatusBadRequest)
 		return
 	}
 	err := handler.s.CancelProcess(pid)
@@ -43,7 +43,7 @@ func (handler *Handler) CancelProcess(w http.ResponseWriter, r *http.Request) {
 func (handler *Handler) GetProcessStatus(w http.ResponseWriter, r *http.Request) {
 	pid := r.URL.Query().Get(":pid")
 	if pid == "" {
-		http.Error(w, "pid is required", http.StatusBadRequest)
+		http.Error(w, ErrPidIsRequired.Error(), http.StatusBadRequest)
 		return
 	}
 

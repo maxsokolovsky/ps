@@ -12,8 +12,8 @@ const (
 	GetStatusCmd = "status"
 )
 
-var addr = flag.String("addr", ":4000", "HTTP network address")
 var host = flag.String("host", "localhost", "HTTP network host")
+var port = flag.String("port", ":4000", "HTTP network port")
 
 func main() {
 	flag.Parse()
@@ -25,6 +25,7 @@ func main() {
 	var err error
 	cmd := os.Args[1]
 	args := os.Args[2:]
+
 	switch cmd {
 	case CreateCmd:
 		err = HandleCreateCmd(args)

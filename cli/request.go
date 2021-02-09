@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-var baseUrl = fmt.Sprintf("https://%s%s", *host, *addr)
+var baseUrl = fmt.Sprintf("https://%s%s", *host, *port)
 
 func getClient() *http.Client {
 	return &http.Client{
